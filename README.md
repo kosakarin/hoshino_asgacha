@@ -1,8 +1,9 @@
 # hoshino_asgacha
 hoshinobot的llas抽卡模拟器v1.0
 
-# 没有readme
-
-## 因为懒
-
-# 图片数据正在传 电脑上没有加速器（）
+# 使用方法
+ 把image文件夹放到\res\img\  下
+ 
+ 在__bot__.py内添加 'asgacha'
+ 
+ 稍微修改下代码中的几个路径位置，使得文件能被正确读取（我懒 没有写成相对位置
