@@ -144,4 +144,5 @@ async def gacha_jing(bot, ev):  #嫌慢？直接整一井！
     await bot.send(ev, msg)
         
 
+        
 
