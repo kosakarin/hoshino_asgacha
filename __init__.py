@@ -20,14 +20,11 @@ def get_pic(pic_path):
     img = img.resize((80, 80), Image.ANTIALIAS)
     return img
 
-@sv.on_rex((r'^as( )?(ur|UR|)( )?(一|1|单)(发|抽)'),only_to_me = True)
+@sv.on_rex((r'^(as|as )(一抽|单抽)'),only_to_me = True)   #我讨厌正则表达式
 async def gacha_one(bot, ev):  #单抽
-    match = ev['match']
     msg = ''
-    if match.group(2) == '':   
-        card_level = gacha_pt(up_num)
-    else:
-        card_level = gacha_pup(up_num)   #UR
+  
+    card_level = gacha_pt(up_num)
     _path = random_give_card(card_level)
     base = Image.open('C:\/Users/Administrator/Desktop/XCW/res/img/image/frame.png')  #加载底图
     f = get_pic(_path)           #加载icon
@@ -38,20 +35,29 @@ async def gacha_one(bot, ev):  #单抽
     base64_str = f'base64://{base64.b64encode(buf.getvalue()).decode()}'
     await bot.send(ev, f'[CQ:image,file={base64_str}]')
 
+@sv.on_rex((r'^(as|as )(ur|UR|ur |UR )(一抽|单抽)'),only_to_me = True)   #我讨厌正则表达式
+async def gacha_one_u(bot, ev):  #单抽
+    msg = ''
 
+    card_level = gacha_pup(up_num)   #UR
+    _path = random_give_card(card_level)
+    base = Image.open('C:\/Users/Administrator/Desktop/XCW/res/img/image/frame.png')  #加载底图
+    f = get_pic(_path)           #加载icon
+    base.paste(f, (275,100))     #制图
+    
+    buf = BytesIO()
+    base.save(buf, format='PNG')
+    base64_str = f'base64://{base64.b64encode(buf.getvalue()).decode()}'
+    await bot.send(ev, f'[CQ:image,file={base64_str}]')
 
-@sv.on_rex((r'^(as)( )?(ur|UR|)( )?(十|10)(发|抽|连|连抽)'), only_to_me = True) 
+@sv.on_rex((r'^(as|as )(十|10)(发|抽|连|连抽)'), only_to_me = True)   #我讨厌正则表达式
 async def gacha_ten(bot, ev):  #十连
     match = ev['match']
     msg = '十连结果为：'
     card_level = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    if match.group(2) == '':
-        for i in range(1,10):
-            card_level[i] = gacha_pt(up_num)
-        card_level[0] = gacha_bd(up_num)
-    else:    #ur
-        for i in range(0,10):
-            card_level[i] = gacha_pup(up_num)
+    for i in range(1,10):
+        card_level[i] = gacha_pt(up_num)
+    card_level[0] = gacha_bd(up_num)
     
     base = Image.open('C:\/Users/Administrator/Desktop/XCW/res/img/image/frame.png')  #加载底图
     row_offset = 35    #制图参数
@@ -71,8 +77,38 @@ async def gacha_ten(bot, ev):  #十连
     base.save(buf, format='PNG')
     base64_str = f'base64://{base64.b64encode(buf.getvalue()).decode()}'
     await bot.send(ev, f'[CQ:image,file={base64_str}]')
+    
+    
+@sv.on_rex((r'^(as|as )(ur|UR|ur |UR )(十|10)(发|抽|连|连抽)'), only_to_me = True)   #我讨厌正则表达式
+async def gacha_ten_u(bot, ev):  #十连
+    match = ev['match']
+    msg = '十连结果为：'
+    card_level = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    for i in range(0,10):
+        card_level[i] = gacha_pup(up_num)
+    
+    base = Image.open('C:\/Users/Administrator/Desktop/XCW/res/img/image/frame.png')  #加载底图
+    row_offset = 35    #制图参数
+    index = 0          #制图参数
 
-@sv.on_rex((r'^as( )?(下|一|抽一)井'), only_to_me = True)     
+        
+    for level in card_level:  #依次读取卡片稀有度
+        _path = random_give_card(level)  #获取icon path
+        row_index = index // 5           #制图参数
+        col_index = index % 5            #制图参数
+        f = get_pic(_path)               #加载icon
+        base.paste(f, (95 + col_index * 80 + (col_index - 1) * 30,
+                     row_offset + 40 + row_index * 80 + (row_index - 1) * 20))  #制图
+        index += 1
+        #msg += R.img(_path).cqcode  ####
+    buf = BytesIO()
+    base.save(buf, format='PNG')
+    base64_str = f'base64://{base64.b64encode(buf.getvalue()).decode()}'
+    await bot.send(ev, f'[CQ:image,file={base64_str}]')
+    
+    
+    
+@sv.on_rex((r'^(as|as )(下|一|抽一)井'), only_to_me = True)     
 async def gacha_jing(bot, ev):  #嫌慢？直接整一井！
     up = 0
     ur = 0
@@ -144,5 +180,4 @@ async def gacha_jing(bot, ev):  #嫌慢？直接整一井！
     await bot.send(ev, msg)
         
 
-        
 
