@@ -1,5 +1,5 @@
 # hoshino_asgacha
-hoshinobot的llas抽卡模拟器v1.0
+hoshinobot的llas抽卡模拟器v1.1
 
 # 使用方法
  把image文件夹放到\res\img\  下
