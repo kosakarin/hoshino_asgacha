@@ -20,19 +20,18 @@ def get_pic(pic_path):
     img = img.resize((80, 80), Image.ANTIALIAS)
     return img
 
-@sv.on_rex((r'^as( )?(ur|UR)?( )?(一|1|单)(发|抽)'),only_to_me = True)
+@sv.on_rex((r'^as( )?(ur|UR|)( )?(一|1|单)(发|抽)'),only_to_me = True)
 async def gacha_one(bot, ev):  #单抽
     match = ev['match']
     msg = ''
-    if match.group(2) == 'ur' or 'UR':   #UR
-        card_level = gacha_pup(up_num)
-    else:
+    if match.group(2) == '':   
         card_level = gacha_pt(up_num)
+    else:
+        card_level = gacha_pup(up_num)   #UR
     _path = random_give_card(card_level)
-    base = Image.open('C:\/Users/Administrator/Desktop/XCW/res/img/image/frame.png')
-    f = get_pic(_path)
-    base.paste(f, (275,
-                 100))
+    base = Image.open('C:\/Users/Administrator/Desktop/XCW/res/img/image/frame.png')  #加载底图
+    f = get_pic(_path)           #加载icon
+    base.paste(f, (275,100))     #制图
     
     buf = BytesIO()
     base.save(buf, format='PNG')
@@ -41,30 +40,31 @@ async def gacha_one(bot, ev):  #单抽
 
 
 
-@sv.on_rex((r'^(as)( )?(ur|UR)?( )?(十|10)(发|抽|连|连抽)'), only_to_me = True) 
+@sv.on_rex((r'^(as)( )?(ur|UR|)( )?(十|10)(发|抽|连|连抽)'), only_to_me = True) 
 async def gacha_ten(bot, ev):  #十连
     match = ev['match']
     msg = '十连结果为：'
     card_level = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    for i in range(1,10):
-        card_level[i] = gacha_pt(up_num)
-    card_level[0] = gacha_bd(up_num)
-    
-    base = Image.open('C:\/Users/Administrator/Desktop/XCW/res/img/image/frame.png')
-    row_offset = 35
-    index = 0
-    
-    if match.group(2) == 'ur' or 'UR':   #UR十连
+    if match.group(2) == '':
+        for i in range(1,10):
+            card_level[i] = gacha_pt(up_num)
+        card_level[0] = gacha_bd(up_num)
+    else:    #ur
         for i in range(0,10):
             card_level[i] = gacha_pup(up_num)
+    
+    base = Image.open('C:\/Users/Administrator/Desktop/XCW/res/img/image/frame.png')  #加载底图
+    row_offset = 35    #制图参数
+    index = 0          #制图参数
+
         
-    for level in card_level:
-        _path = random_give_card(level)
-        row_index = index // 5
-        col_index = index % 5
-        f = get_pic(_path)
+    for level in card_level:  #依次读取卡片稀有度
+        _path = random_give_card(level)  #获取icon path
+        row_index = index // 5           #制图参数
+        col_index = index % 5            #制图参数
+        f = get_pic(_path)               #加载icon
         base.paste(f, (95 + col_index * 80 + (col_index - 1) * 30,
-                     row_offset + 40 + row_index * 80 + (row_index - 1) * 20))
+                     row_offset + 40 + row_index * 80 + (row_index - 1) * 20))  #制图
         index += 1
         #msg += R.img(_path).cqcode  ####
     buf = BytesIO()
@@ -85,9 +85,9 @@ async def gacha_jing(bot, ev):  #嫌慢？直接整一井！
     gacha_times = 0 #记录出up时抽了多少发十连
     msgg = ''
     
-    base = Image.open('C:\/Users/Administrator/Desktop/XCW/res/img/image/frame.png')
-    row_offset = 5
-    index = 0
+    base = Image.open('C:\/Users/Administrator/Desktop/XCW/res/img/image/frame.png')  #加载底图
+    row_offset = 5   #制图参数
+    index = 0        #制图参数
     
     
     for i in range(1,26):   #25发10连
@@ -115,16 +115,16 @@ async def gacha_jing(bot, ev):  #嫌慢？直接整一井！
                 r += 1
                 
             if level >= 3:
-                _path = random_give_card(level)
-                row_index = index // 7 
-                col_index = index % 7
-                f = get_pic(_path)
+                _path = random_give_card(level)   #获取icon path
+                row_index = index // 7            #制图参数
+                col_index = index % 7             #制图参数
+                f = get_pic(_path)                #加载icon
                 base.paste(f, (35 + col_index * 80 + (col_index - 1) * 5,
-                          row_offset + 40 + row_index * 80 + (row_index - 1) * 5))
+                          row_offset + 40 + row_index * 80 + (row_index - 1) * 5))  #制图
                 index += 1
                 
         temp = temp1 + temp2
-        if temp == up_num:  #出双up结束本次抽卡
+        if temp == up_num:  #出up抽齐自动结束本次抽卡
             msgg += f'up抽齐啦!已自动结束下井\n当前up卡为【綺麗に色づいてるね】松浦果南！\n共抽取{gacha_times}发十连，共计抽出{ur}张ur，{sr}张sr'
             break
     if up_num == 2:        
