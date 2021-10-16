@@ -19,10 +19,6 @@ def con_num(path):
     return count
     
 #为了便于后续修改
-r_num = con_num(base_path + r_path)     #69      #库存R卡数量
-sr_num = con_num(base_path + sr_path)   #245     #库存sr卡数量
-ur_num = con_num(base_path + ur_path)   #236+1   #库存UR数量(单up模式保留pick_up2.png)
-
 ur_prob = 0.05   #单次抽卡ur爆率为5%
 sr_prob = 0.15   #单次抽卡sr爆率为15%
 up_prob = 0.2    #当抽出ur时这张卡有10%概率为up卡     (单up时填双倍概率)
