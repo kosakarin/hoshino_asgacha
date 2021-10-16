@@ -119,6 +119,7 @@ def change_name(name:str) -> int:
     for team_name in team_name_list:
         if name == team_name:
             team_re = flag
+            break
         flag += 1
         
     if team_re == 0:
@@ -127,6 +128,7 @@ def change_name(name:str) -> int:
             if name == member_name:
                 member_re = flag
                 team_re = team_flag
+                break
             flag += 1
             if flag > 9 and team_flag != 3:
                 flag = 1
