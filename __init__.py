@@ -178,12 +178,12 @@ async def gacha_jing(bot, ev):  #嫌慢？直接整一井！
             break
     if up_num_flag == 2:        
         if temp == 1: #单up的提示
-            msgg += f'出up啦！\n当前up卡为{up_card1}和{up_card2}\n'
+            msgg += f'出up啦！\n当前up卡为{up_card1}{up_card2}\n'
         elif temp == 0:   #井了的提示
-            msgg += f'井啦！\n当前up卡为{up_card1}和{up_card2}\n'
+            msgg += f'井啦！\n当前up卡为{up_card1}{up_card2}\n'
     elif up_num_flag == 1:
         if temp == 0:
-            msgg += f'井啦！\n当前up卡为{up_card1}和{up_card2}\n'
+            msgg += f'井啦！\n当前up卡为{up_card1}{up_card2}\n'
    
         
     msgg += f'共抽取{gacha_times}发十连，共计抽出{ur}张ur，{sr}张sr'
