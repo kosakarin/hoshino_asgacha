@@ -8,6 +8,8 @@ sr_path = 'image/icon_sr/'
 ur_path = 'image/icon_ur/'
 
 base_path = 'C:\/Users/Administrator/Desktop/XCW/res/img/'
+up_team = 2
+up_mem = 3
 
 
 def con_num(path):
@@ -32,6 +34,9 @@ up_prob_ = 0.5   #当抽出up时这张卡有50%概率为pick_up1 (单up时填0.5
  #用于v2.0的随机给卡函数 如果没有更好的就暂定用这个
 def random_give_card(card_level:int, member:int, team:int) -> str:
     _path = ''
+    mode_flag = 0
+    if member == 0 and team == 0:
+        mode_flag = 1
     
     if card_level >= 3:
         _path += ur_path 
@@ -40,7 +45,8 @@ def random_give_card(card_level:int, member:int, team:int) -> str:
     else:
         _path += r_path
         
-    if card_level >= 4 and member == 0 and team == 0:
+    if card_level >= 4 and mode_flag == 1:
+        
         if card_level == 4:
             _path += 'pick_up1.png'
         else:
@@ -56,12 +62,15 @@ def random_give_card(card_level:int, member:int, team:int) -> str:
     
         _path += str(team) + '/' +  str(member) + '/'
         card_num = con_num(base_path + _path)
-        if card_num > 1:
+        if team == up_team and member == up_mem and mode_flag == 1:    
+            _path += str(random.randint(1, card_num - 1)) + '.png'
+        elif card_num > 1:
             _path += str(random.randint(1, card_num)) + '.png'
         elif card_num == 1:
             _path += '1.png'
     
     return _path    
+
 
 def gacha_bd(up_num:int) -> int:  #十连保底 #十连时的第一抽 #返回卡片稀有度
     roll = random.random()
