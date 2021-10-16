@@ -1,6 +1,8 @@
 # hoshino_asgacha
 hoshinobot的llas抽卡模拟器v1.1
 
+# git这个网页管理真反人类 搞得我想删仓跑路了（
+
 # 使用方法
  把image.zip解压后放到\res\img\  下
  
