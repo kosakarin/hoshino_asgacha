@@ -1,6 +1,7 @@
 import base64,os
 from .asgacha import *
 from hoshino import Service, R
+from .countpoint import count_point
 from hoshino.typing import CQEvent
 from PIL import Image
 
@@ -206,3 +207,33 @@ async def cha_li(bot, ev):
     await bot.send(ev, msg)
 
 
+@sv.on_prefix(('as控分'))
+async def up_ca(bot, ev):
+    args = ev.message.extract_plain_text().strip().split()
+    if len(args) <= 0 or len(args) > 2:
+        await bot.send(ev, '请提供目标分数和当前分数或直接提供分数差')
+        return
+    elif len(args) == 2:
+        if int(args[0]) > int(args[1]):
+            try:
+                target = int(args[0])
+                x = int(args[1])
+            except:
+                await bot.send(ev, '输入类型错误')
+        else:
+            try:
+                target = int(args[1])
+                x = int(args[0])
+            except:
+                await bot.send(ev, '输入类型错误')
+                return
+        msg = count_point(target, x)
+    else:
+        try:
+            target = int(args[0])
+            msg = count_point(target, 0)
+        except:
+                await bot.send(ev, '输入类型错误')
+                return
+    
+    await bot.send(ev, msg, at_sender=True)
