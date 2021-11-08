@@ -8,8 +8,19 @@ from PIL import Image
 from io import BytesIO
 
 
-sv = Service('as抽卡', bundle='as', help_='''
-
+sv = Service('as抽卡', bundle='as', help_='''使用如下命令进行抽卡模拟：
+[as][单抽|十连|一井][不加为普通卡池|角色名称|团队名称]
+暂时支持的角色昵称如下：
+[果][绘][鸟][海][凛][姬][希][花][妮]
+[千][梨][南][黛][曜][善][丸][鞠][露]
+[步梦][霞][雫][果林][爱][彼方][雪菜][艾玛][璃奈][栞][米娅][岚珠]
+团体名称：[缪][水][虹]
+暂不支持小队招募,以及米娅和岚珠的单人招募
+使用如下命令进行控分计算：(模式：0或不提供:默认  1:仅S  2:无剧情关卡 3:无剧情关卡且仅S)
+[as控分][分数1][分数2][模式] 
+[as控分][分数][模式]
+注：程序内部会自动取较大值为目标分数，
+分数2请不要提供小于10的数，会被识别为模式参数
 '''.strip())
 
 up_num = 1 #当前卡池为单up还是双up
@@ -210,30 +221,44 @@ async def cha_li(bot, ev):
 @sv.on_prefix(('as控分'))
 async def up_ca(bot, ev):
     args = ev.message.extract_plain_text().strip().split()
-    if len(args) <= 0 or len(args) > 2:
-        await bot.send(ev, '请提供目标分数和当前分数或直接提供分数差')
+    if len(args) <= 0 or len(args) > 3:
+        await bot.send(ev, '输入错误，使用as帮助查看具体指令')
         return
+    elif len(args) == 3:
+        try:
+            target = max(int(args[0]), int(args[1]))
+            x = min(int(args[0]), int(args[1]))
+            mod = int(args[2])
+        except:
+            await bot.send(ev, '输入类型错误')
+
+        msg = count_point(target, x, mod)
     elif len(args) == 2:
-        if int(args[0]) > int(args[1]):
+        try:
+            arg = int(args[1])
+        except:
+            await bot.send(ev, '输入类型错误')
+            return
+        if arg <= 10:
             try:
                 target = int(args[0])
-                x = int(args[1])
-            except:
-                await bot.send(ev, '输入类型错误')
-        else:
-            try:
-                target = int(args[1])
-                x = int(args[0])
+                msg = count_point(target, 0, arg)
             except:
                 await bot.send(ev, '输入类型错误')
                 return
-        msg = count_point(target, x)
+        else: 
+            try:
+                target = max(int(args[0]), int(args[1]))
+                x = min(int(args[0]), int(args[1]))
+                msg = count_point(target, x, 0)
+            except:
+                await bot.send(ev, '输入类型错误')
+                return
     else:
         try:
-            target = int(args[0])
-            msg = count_point(target, 0)
+            msg = count_point(int(args[0]), 0, 0)
         except:
-                await bot.send(ev, '输入类型错误')
-                return
-    
+            await bot.send(ev, '输入类型错误')
+            return
+
     await bot.send(ev, msg, at_sender=True)
