@@ -1,16 +1,17 @@
 import base64, os, random, time
+from .image import *
+from .money import *
 import hoshino
-from hoshino.util import DailyNumberLimiter
-from hoshino import Service, R
+from hoshino import Service
 from hoshino.typing import CQEvent
 from PIL import Image
 
-#可能有少量bug 主要原因是上传的这个是个阉割版，少了一些东西，上传前可能没删干净那些变量
-aslmt = DailyNumberLimiter(1)
 
 sv = Service('as签到', bundle='aslogin', help_='''使用如下命令进行签到：
 as签到
 '''.strip())
+
+
 
 login_list_3 = [
     '宜 抽卡',
@@ -72,8 +73,10 @@ birth_list = [
     "1005",
     "1113",
     "1206",
-    "1216"
-
+    "1216",
+    
+    
+    "0203"
     
 ]
 
@@ -109,8 +112,10 @@ member_list = [
     "三船栞子",
     "天王寺璃奈",
     "米娅·泰勒",
-    "近江彼方"
+    "近江彼方",
     
+    
+    "小环奈"
     
 ]
 
@@ -125,10 +130,10 @@ week_list = [
 ]
 
 def hash(qq: int):
-    days = int(time.strftime("%d", time.localtime(time.time()))) + 31 * int(
-        time.strftime("%m", time.localtime(time.time()))) + 77 +  int(
-        time.strftime("%y", time.localtime(time.time()))) + 2000
-    return (days * qq) >> 8
+    days = int(time.strftime("%d", time.localtime(time.time()))) + random.randint(0, 31) * int(
+        time.strftime("%m", time.localtime(time.time()))) + random.randint(0, 77) +  int(
+        time.strftime("%y", time.localtime(time.time()))) + random.randint(0, 114)
+    return (days * qq - random.randint(0, 514)) >> 8
 
 
 def get_day(days, months):
@@ -143,43 +148,50 @@ def get_day(days, months):
 
     return 0, ''
 
+
+@sv.on_rex(('as签到帮助'))
+async def aslogin_help(bot, ev):
+    await bot.send(ev, f'[CQ:image,file=base64://{image_to_base64(text_to_image(sv.help.strip())).decode()}]')
     
-@sv.on_fullmatch('as签到')
+@sv.on_rex(r'^(as|as |AS|AS )签到')
 async def as_login_bonus(bot, ev):
     uid = ev['user_id']
-    
+    key = "starstone"
     list_len = len(login_list_3)
     days = int(time.strftime("%d", time.localtime(time.time())))
     months = int(time.strftime("%m", time.localtime(time.time())))
     week = int(time.strftime("%w", time.localtime(time.time())))
     birth_flag, member_birth = get_day(days, months)
-    h = hash(uid)
-    if not aslmt.check(uid):
+    last_login = int(get_user_money(uid, "last_login"))
+    h = hash(int(uid))
+    if days == last_login:
         await bot.send(ev, '你今天已经签到过啦~~', at_sender=True)
         return
     else:
-        aslmt.increase(uid)
-        rp = h % 100
+        set_user_money(uid, "last_login", days)
+        rp = h % 101
         rp_value = []
         for i in range(list_len):
             rp_value.append(h & 3)
             h >>= 2
         msg = f'今天是{months}月{days}日 星期{week_list[week]}\n'
-
+        if birth_flag == 1:
+            msg += f'今天是{member_birth}的生日！让我们祝{member_birth}生日快乐！\n'
             
         msg += f'今日人品值：{rp}\n'
+        if rp >= 95:
+            loveca_num = max(1, min(3, rp - 95))
+            msg += f'大幸运！获得了{loveca_num}枚lovecastone！\n'
+            increase_user_money(uid, "lovecastone", loveca_num)
         msg += '\n今日运势:\n'
         for i in range(list_len):
             if rp_value[i] == 3:
                 msg += f'{login_list_3[i]}\n'
             elif rp_value[i] == 0:
                 msg += f'{login_list_0[i]}\n'
-                
-        if birth_flag == 1:
-            msg += f'今天是{member_birth}，让我们祝{member_birth}生日快乐！'
-        await bot.send(ev, msg, at_sender = True)
+        num = rp * 5 + (1 + birth_flag) * 500
+        increase_user_money(uid, key, num)
+        
+        msg += f'获得了{num}星星！\n当前拥有{str(get_user_money(uid, key))}星星！！'
 
-
-
-
-
+        await bot.send(ev, f'[CQ:image,file=base64://{image_to_base64(text_to_image(msg)).decode()}]', at_sender = True)
