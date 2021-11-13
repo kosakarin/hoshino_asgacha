@@ -1,20 +1,17 @@
-import base64, os, random
-from hoshino.image import *
-from hoshino.money import *
+#import base64, os, random ##不是 我当初写这里的时候怎么会import这些东西 没必要啊
+#from .image import *    #不是 我当初写这里的时候怎么会import这东西 没必要啊
+from .money import *
 import hoshino
 from hoshino import Service
 from hoshino.typing import CQEvent
-from PIL import Image
+#from PIL import Image    #不是 我当初写这里的时候怎么会import这东西 没必要啊
 
+#其实我感觉这个可以直接合到别的文件里面（超小声） 属于是写的时候脑抽了
+sv = Service('查看财富', bundle='seemoney', help_='''
 
-sv = Service('查看财富', bundle='seemoney', help_='''使用如下命令进行查看：
-我的钱包
 '''.strip())
 
 
-@sv.on_rex(('qianbao帮助'))
-async def money_help(bot, ev):
-    await bot.send(ev, f'[CQ:image,file=base64://{image_to_base64(text_to_image(sv.help.strip())).decode()}]')
     
 @sv.on_fullmatch('我的钱包')
 async def money_get(bot, ev):
