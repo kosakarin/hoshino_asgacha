@@ -23,6 +23,6 @@ async def money_get(bot, ev):
     msg = ''
     for key in key_list:
         msg += f'\n{key} = {get_user_money(uid, key)}'
-    msg += '\n收集100枚lovecastone后有神秘奖励哦！（没想好）'
+
     await bot.send(ev, msg, at_sender = True)
 
