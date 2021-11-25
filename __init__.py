@@ -24,6 +24,8 @@ sv = Service('as抽卡', bundle='as', help_='''使用如下命令进行抽卡模
 使用如下命令进行控分计算：(模式：0或不提供:默认  1:仅S  2:无剧情关卡 3:无剧情关卡且仅S)
 [as控分][分数1][分数2][模式] 
 [as控分][分数][模式]
+[as加成控分][加成][分数1][分数2][模式](同无加成控分，但是加成必须写在第一位，你有18%加成就说18)
+※暂时请不要使用加成控分，暂未理清活动pt的取整规则，加成计算存在取整误差
 注：程序内部会自动取较大值为目标分数，
 分数2请不要提供小于10的数，会被识别为模式参数
 [as仓库] 查看你的仓库
@@ -504,8 +506,7 @@ async def up_ca(bot, ev):
             mod = int(args[2])
         except:
             await bot.send(ev, '输入类型错误')
-
-        msg = count_point(target, x, mod)
+        msg = count_point(target, x, mod, 0)
     elif len(args) == 2:
         try:
             arg = int(args[1])
@@ -515,7 +516,7 @@ async def up_ca(bot, ev):
         if arg <= 10:
             try:
                 target = int(args[0])
-                msg = count_point(target, 0, arg)
+                msg = count_point(target, 0, arg, 0)
             except:
                 await bot.send(ev, '输入类型错误')
                 return
@@ -523,13 +524,61 @@ async def up_ca(bot, ev):
             try:
                 target = max(int(args[0]), int(args[1]))
                 x = min(int(args[0]), int(args[1]))
-                msg = count_point(target, x, 0)
+                msg = count_point(target, x, 0, 0)
             except:
                 await bot.send(ev, '输入类型错误')
                 return
     else:
         try:
-            msg = count_point(int(args[0]), 0, 0)
+            msg = count_point(int(args[0]), 0, 0, 0)
+        except:
+            await bot.send(ev, '输入类型错误')
+            return
+    
+    await bot.send(ev, f'[CQ:image,file=base64://{image_to_base64(text_to_image(msg)).decode()}]')
+
+@sv.on_prefix(('as加成控分')) #懒得去写正则表达式适配不同情况了 直接单独写了个触发
+async def up_ca_up(bot, ev):
+    args = ev.message.extract_plain_text().strip().split()
+    print(args)
+    if len(args) <= 1 or len(args) > 4:
+        await bot.send(ev, '输入错误，使用as帮助查看具体指令')
+        return
+    elif len(args) == 4:
+        try:
+            target = max(int(args[2]), int(args[1]))
+            x = min(int(args[2]), int(args[1]))
+            mod = int(args[3])
+            _up = int(args[0])
+        except:
+            await bot.send(ev, '输入类型错误')
+        msg = count_point(target, x, mod, _up)
+    elif len(args) == 3:
+        try:
+            arg = int(args[2])
+            _up = int(args[0])
+        except:
+            await bot.send(ev, '输入类型错误')
+            return
+        if arg <= 10:
+            try:
+                target = int(args[1])
+                msg = count_point(target, 0, arg, _up)
+            except:
+                await bot.send(ev, '输入类型错误')
+                return
+        else: 
+            try:
+                target = max(int(args[2]), int(args[1]))
+                x = min(int(args[2]), int(args[1]))
+                _up = int(args[0])
+                msg = count_point(target, x, 0, _up)
+            except:
+                await bot.send(ev, '输入类型错误')
+                return
+    else:
+        try:
+            msg = count_point(int(args[1]), 0, 0, int(args[0]))
         except:
             await bot.send(ev, '输入类型错误')
             return
