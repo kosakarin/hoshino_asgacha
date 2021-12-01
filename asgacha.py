@@ -27,6 +27,7 @@ up_prob = 0.2    #当抽出ur时这张卡有10%概率为up卡     (单up时填�
 up_prob_ = 0.5   #当抽出up时这张卡有50%概率为pick_up1 (单up时填0.5)
 
 def get_cid(card_level, team, member, temp): #CID合成 目前采用 [稀有度] 1 [团体号] 1 [角色编号] 2 [卡片编号] 2 [觉醒标记] 1 规则来合成7位cid
+    card_level = card_level if card_level <= 3 else 3
     if member > 9 and temp > 9:
         cid = int(f'{card_level}{team}{member}{temp}1') 
     elif member > 9:
