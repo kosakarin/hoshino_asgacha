@@ -1,5 +1,5 @@
 # hoshino_asgacha
-hoshinobot的llas抽卡模拟器v2.0
+hoshinobot的llas抽卡模拟器v4.0
 
 # git这个网页管理真反人类 搞得我想删仓跑路了（
 
