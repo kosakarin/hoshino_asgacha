@@ -47,20 +47,17 @@ name_list = {
     "lovecastone":["lovecastone", "loveca", "爱心",
                 "心", "心石", "爱心石"],
     "gold":["gold", "金币", "金子", "黄金"
-                 ]
-               
+                 ],
+    "exgacha":["井券", "兑换券", "exgacha"],
+    "kirastone":["羽毛石"]
 }
 
 def translatename(name):
-    if name in name_list["starstone"]:
-        key = 'starstone'
-    elif name in name_list["lovecastone"]:
-        key = 'lovecastone'
-    elif name in name_list["gold"]:
-        key = 'gold'
+    for key in name_list.keys():
+        if name in name_list[key]:
+            return key
     else:
         return ''
-    return key
 
 def load_user_money():
     try:
@@ -116,8 +113,11 @@ def increase_user_money(user_id, key, value):
             user_money[user_id] = {}
             for k, v in config['default'].items():
                 user_money[user_id][k] = v
-        now_money = int(get_user_money(user_id, key)) + value
-        user_money[user_id][key] = now_money
+        if key not in user_money[user_id].keys():
+            user_money[user_id][key] = config['default'][key] + value
+        else:
+            now_money = int(get_user_money(user_id, key)) + value
+            user_money[user_id][key] = now_money
         with open(path, 'w', encoding='utf8') as f:
             json.dump(user_money, f, ensure_ascii=False, indent=2)
         return 1
@@ -133,7 +133,11 @@ def reduce_user_money(user_id, key, value):
             user_money[user_id] = {}
             for k, v in config['default'].items():
                 user_money[user_id][k] = v
-        now_money = int(get_user_money(user_id, key)) - value
+        if key not in user_money[user_id].keys():
+            user_money[user_id][key] = config['default'][key]
+            return 0
+        else:
+            now_money = int(get_user_money(user_id, key)) - value
         if now_money < 0:
             return 0
         user_money[user_id][key] = now_money 
@@ -147,8 +151,9 @@ def increase_all_user_money(key, value):
     try:
         if not key in keyword_list:
             return 0
-        
         for user_id in user_money.keys():
+            if key not in user_money[user_id].keys():
+                user_money[user_id][key] = config['default'][key]
             user_money[user_id][key] += value
         with open(path, 'w', encoding='utf8') as f:
             json.dump(user_money, f, ensure_ascii=False, indent=2)
@@ -164,6 +169,9 @@ def tran_kira(uid, key, num):
     elif key == 'lovecastone':
         value = num // 50
         num = value * 50
+    else:
+        value = 0
+        num = 0
     increase_user_money(uid, key, value)
     reduce_user_money(uid, 'kirastone', num)
     return num, value
