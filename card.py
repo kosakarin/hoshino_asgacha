@@ -2,7 +2,7 @@ from . import asgacha
 import math, base64, os
 from io import BytesIO
 from .res import card_save
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 
 def normalize_digit_format(n):
     return f'0{n}' if n < 10 else f'{n}'
@@ -118,3 +118,29 @@ def get_my_rank(uid):
     ranking = card_save.db.get_ranking(uid)
     ranking_desc = f'第{ranking}位' if ranking != -1 else '未上榜'
     return ranking_desc
+
+def card_search(name):
+    member, team = gacha.change_name(name)
+    if member == 0:
+        return '角色昵称识别失败'
+    chara = f'{team}{normalize_digit_format(member)}'
+    cid_list = cid_list_remaker(asgacha.cids_list)
+    fontpath = os.path.join(os.path.dirname(__file__), 'res/msyh.ttc')
+    font = ImageFont.truetype(fontpath, 40)
+    row_num = len(cid_list[chara])
+    base = Image.new("RGB",(300, 
+                            20 + row_num * 80 + (row_num - 1) * 10), (255, 255, 255))
+    index = 0
+    for cid in cid_list[chara]:
+        _path = asgacha.cid_to_path(cid)
+        icon = Image.open(_path)
+        icon = icon.resize((80,80), Image.ANTIALIAS)
+        base.paste(icon,(10, 90 * index + 10), icon)
+        draw = ImageDraw.Draw(base)
+        draw.text((100, 90 * index + 25),str(cid),font=font,fill=(0, 0, 0, 0))
+        index += 1
+    buf = BytesIO()
+    base = base.convert('RGB')
+    base.save(buf, format='JPEG')
+    base64_str = f'base64://{base64.b64encode(buf.getvalue()).decode()}'
+    return f'[CQ:image,file={base64_str}]'
