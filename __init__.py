@@ -202,7 +202,7 @@ async def sys_compensate(bot, ev):
         name = arrs[0]
         value = int(arrs[1])
         key = money.translatename(name)
-        if money.increase_all_user_money(key, value):
+        if money.increase_all_user_money(money.translatename(key), value):
             await bot.send(ev, '补偿下发成功', at_sender = True)
         else: 
             await bot.send(ev, '补偿下发失败', at_sender = True)
