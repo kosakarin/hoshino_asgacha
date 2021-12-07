@@ -206,7 +206,6 @@ def make_img(path_list, times):
     buf = BytesIO()
     base.save(buf, format='PNG')
     
-    base.save('./test.png')  #测试用语句
     base64_str = f'base64://{base64.b64encode(buf.getvalue()).decode()}'
     return base64_str
 
