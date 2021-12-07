@@ -84,7 +84,7 @@ def get_user_money(user_id, key):
         if key in user_money[user_id]:
             return user_money[user_id][key]
         else:
-            return None
+            return 0
     except:
         return None
 
