@@ -96,7 +96,7 @@ def get_day(days, months):
 
     return birth_flag, event_flag, msg
 
-def as_login(uid, vip):
+def as_login(uid):
     list_len = len(login_list_3)
     days = int(time.strftime("%d", time.localtime(time.time())))
     months = int(time.strftime("%m", time.localtime(time.time())))
