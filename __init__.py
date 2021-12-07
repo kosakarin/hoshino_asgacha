@@ -31,7 +31,7 @@ sv = Service('as抽卡', bundle='as', help_='''使用如下命令进行抽卡模
 [群排名] 看看你现在第几名
 '''.strip())
 
-key_list = ["gold", "lovecastone", "starstone", "kirastone"]
+key_list = ["金币", "爱心", "星星", "羽毛石", "兑换券"]
 
 #单抽
 @sv.on_rex((r'^(as|as )(.*)(一抽|单抽)(.*)'))                              #我讨厌正则表达式
@@ -138,7 +138,7 @@ async def money_get(bot, ev):
     uid = ev['user_id'] 
     msg = ''
     for key in key_list:
-        msg += f'\n{key} = {money.get_user_money(uid, key)}'
+        msg += f'\n{key} = {money.get_user_money(uid, money.translatename(key))}'
     msg += '\n收集100枚lovecastone后有神秘奖励哦！'
     await bot.send(ev, msg, at_sender = True)
 
@@ -191,7 +191,7 @@ async def chongqian(bot, ev):
             await bot.send(ev, '货币数量识别失败')
             return
     else:
-         return
+        return
 
 @sv.on_prefix('维护补偿')
 async def sys_compensate(bot, ev):
@@ -215,3 +215,14 @@ async def reload_card_(bot, ev):
     if uid == your_uid: #修改为你的qq号  
         if asgacha.reload_config():
             await bot.send(ev, 'reload success', at_sender = True)
+
+@sv.on_prefix('as查询')
+async def cid_query(bot, ev):
+    name = ev.message.extract_plain_text().strip().split()
+    await bot.send(ev, card.card_search(name))
+    
+@sv.on_prefix('as卡片兑换')
+async def exgacha(bot, ev):
+    arrs = ev.message.extract_plain_text().strip().split()
+    uid = ev["user_id"]
+    await bot.send(ev, asgacha.add_card_to_base(uid, arrs), at_sender = True)
