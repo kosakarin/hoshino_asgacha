@@ -72,11 +72,8 @@ async def gacha_jing(bot, ev):  #嫌慢？直接整一井！
 @sv.on_rex(r'^(as|as |AS|AS )签到')
 async def as_login_bonus(bot, ev):
     uid = uid = ev['user_id']
-    vip = hoshino.priv.check_vip(uid)
     
-    msg, add_vip_flag = as_login(uid, vip)
-    if add_vip_flag:
-        hoshino.priv.add_vip(uid)
+    msg = as_login(uid)
     await bot.send(ev, f'[CQ:image,file=base64://{image.image_to_base64(image.text_to_image(msg.strip())).decode()}]')
 
 #计算器
