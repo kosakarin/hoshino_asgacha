@@ -147,21 +147,7 @@ def as_login(uid, vip):
         money.set_user_money(uid, "rp", h)
         msg += f'您已连续签到{logindays}天，额外获得{min(500, (logindays // 10) * 50)}星星\n'
         msg += f'总计获得了{num}星星！\n当前拥有{str(money.get_user_money(uid, "starstone"))}星星！！\n获得了{gold}金币！'
-    add_vip_flag = 0
-    
-    if not login_flag:
-        if vip:
-            msg += '\nvip用户，额外获得1枚lovecastone！\n'
-            money.increase_user_money(uid, "lovecastone", 1)
-        if money.get_user_money(uid, 'lovecastone') >= 100:
-            if vip:
-                money.reduce_user_money(uid, 'lovecastone', 100)
-                money.increase_user_money(uid, "starstone", 12500)
-                msg += 'lovecastone数量超过100，已自动转为12500星星！\n扣除100lovecastone成功'
-            else:
-                add_vip_flag = 1
-                money.reduce_user_money(uid, 'lovecastone', 100)
-                msg += 'lovecastone数量超过100，已自动成为环奈BOT的VIP会员！\n扣除100lovecastone成功'
+   
 
-    return msg, add_vip_flag
+    return msg
        
