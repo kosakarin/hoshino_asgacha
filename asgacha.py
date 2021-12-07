@@ -253,9 +253,32 @@ def as_gacha(name, uid, times, ur_mode):
     #金钱改变
     money.increase_user_money(uid, 'kirastone', kirastone_num)
     money.reduce_user_money(uid, 'starstone', reduce_money)
-    
+    if len(card_list) >= 200:
+        money.increase_user_money(uid, 'exgacha', 1)
     msg = f'''{get_msg(card_num)}[CQ:image,file={make_img(result_list, times)}]
 共抽卡{len(card_list)}次，花费{reduce_money}星星，获得{kirastone_num}羽毛石！
 '''
     
     return msg
+
+def add_card_to_base(uid, arrs):
+    try:
+        cid = int(arrs[0])
+        print(cid)
+    except:
+        return 'cid获取失败'
+    have = money.get_user_money(uid, 'exgacha')
+    if have < 1:
+        return '你没有足够的兑换券哦！'
+    
+    if cid not in cids_list:
+        return '不存在这张卡哦'
+     
+    _num = card_save.db.add_card(uid, cid)
+    if _num >= 7:
+        return '兑换失败，这张卡你已经满破了哦'
+        
+    else:
+        money.reduce_user_money(uid, 'exgacha', 1)
+
+        return f'兑换{cid}成功！'
